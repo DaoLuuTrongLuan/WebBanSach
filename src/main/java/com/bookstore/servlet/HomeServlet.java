@@ -7,9 +7,9 @@ import com.bookstore.model.Category;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
-import jakarta.servlet.*;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
 
 /**
  * Home Page Servlet

@@ -2,10 +2,6 @@
    CAROUSEL & SLIDER STYLES - HORIZONTAL
    ========================================== */
 
-/* ==========================================
-   CAROUSEL CONTAINER
-   ========================================== */
-
 .carousel {
     position: relative;
     width: 100%;
@@ -46,10 +42,6 @@
     animation: slideInLeft var(--transition-base);
 }
 
-/* ==========================================
-   CAROUSEL CONTROLS
-   ========================================== */
-
 .carousel-controls {
     position: absolute;
     bottom: var(--spacing-base);
@@ -86,10 +78,7 @@
     cursor: not-allowed;
 }
 
-/* ==========================================
-   CATEGORY CAROUSEL
-   ========================================== */
-
+/* Category Carousel */
 .categories-carousel {
     margin-bottom: var(--spacing-lg);
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
@@ -100,6 +89,8 @@
 .categories-carousel .carousel-wrapper {
     gap: var(--spacing-md);
     padding: 0;
+    margin: 0 -var(--spacing-base);
+    padding: var(--spacing-base);
 }
 
 .category-item {
@@ -107,10 +98,43 @@
     min-width: 200px;
 }
 
-/* ==========================================
-   PRODUCTS CAROUSEL
-   ========================================== */
+.category-item .card {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    text-align: center;
+    height: 100%;
+    transition: all var(--transition-base);
+    border: 2px solid var(--border-color);
+    background: var(--bg-white);
+}
 
+.category-item .card:hover {
+    border-color: var(--primary-color);
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+    transform: translateY(-4px);
+}
+
+.category-icon {
+    font-size: var(--font-size-4xl);
+    animation: slideInUp var(--transition-base);
+}
+
+.category-name {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-dark);
+}
+
+.category-count {
+    font-size: var(--font-size-sm);
+    color: var(--text-light);
+}
+
+/* Products Carousel */
 .products-carousel {
     margin-bottom: var(--spacing-xl);
 }
@@ -124,10 +148,6 @@
     flex: 0 0 calc(20% - (var(--spacing-lg) * 4 / 5));
     min-width: 240px;
 }
-
-/* ==========================================
-   RESPONSIVE CAROUSEL
-   ========================================== */
 
 @media (max-width: 1024px) {
     .carousel-item {
@@ -160,6 +180,14 @@
     .category-item {
         flex: 0 0 calc(50% - var(--spacing-md) / 2);
         min-width: 160px;
+    }
+
+    .category-item .card {
+        padding: var(--spacing-md);
+    }
+
+    .category-icon {
+        font-size: var(--font-size-3xl);
     }
 
     .product-carousel-item {
@@ -197,6 +225,10 @@
         flex: 0 0 calc(100vw - 2 * var(--spacing-base) - var(--spacing-base));
     }
 
+    .carousel-controls {
+        display: flex;
+    }
+
     .carousel-btn {
         width: 32px;
         height: 32px;
@@ -232,4 +264,3 @@
     border-radius: 5px;
     box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
 }
-
