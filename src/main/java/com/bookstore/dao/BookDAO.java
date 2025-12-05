@@ -108,7 +108,7 @@ public class BookDAO {
         String sql = "SELECT b.*, a.name as author_name, p.name as publisher_name FROM books b " +
                      "LEFT JOIN authors a ON b.author_id = a.id " +
                      "LEFT JOIN publishers p ON b.publisher_id = p.id " +
-                     "WHERE b.new = TRUE ORDER BY b.id DESC LIMIT 6";
+                     "WHERE b.is_new = TRUE ORDER BY b.id DESC LIMIT 6";
         return executeQuery(sql);
     }
     
@@ -298,7 +298,7 @@ public class BookDAO {
         book.setStock(rs.getInt("stock"));
         book.setFeatured(rs.getBoolean("featured"));
         book.setBestseller(rs.getBoolean("bestseller"));
-        book.setNew(rs.getBoolean("new"));
+        book.setNew(rs.getBoolean("is_new"));
         return book;
     }
     
