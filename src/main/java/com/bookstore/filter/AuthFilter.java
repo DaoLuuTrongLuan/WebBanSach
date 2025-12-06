@@ -13,7 +13,7 @@ import java.io.IOException;
  * Authentication Filter
  * Protects routes that require user login: /cart, /checkout, /vnpay/*
  */
-@WebFilter(urlPatterns = {"/cart", "/checkout", "/vnpay/*"})
+@WebFilter(urlPatterns = {"/cart", "/checkout", "/vnpay/*", "/orders", "/api/test-payment"})
 public class AuthFilter implements Filter {
     
     @Override

@@ -7,8 +7,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Chi tiết sản phẩm - BookStore">
-    <title>Chi Tiết Sách - BookStore</title>
+    <title>${product.title} - BookStore</title>
     <jsp:include page="/WEB-INF/jsp/common/head.jsp"/>
+    <style>
+        .pd-wrapper { display: grid; grid-template-columns: 380px 1fr; gap: 40px; margin: 24px 0; }
+        @media (max-width: 900px) { .pd-wrapper { grid-template-columns: 1fr; } }
+        .pd-gallery { position: sticky; top: 90px; }
+        .pd-gallery .img-box { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 16px; padding: 20px; min-height: 400px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .pd-gallery .img-box img { max-width: 100%; max-height: 360px; object-fit: contain; border-radius: 8px; }
+        .pd-info { padding: 0; }
+        .pd-title { font-size: 26px; font-weight: 700; color: #1a1a2e; margin: 0 0 16px; line-height: 1.3; }
+        .pd-meta { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; padding: 14px 18px; background: #f8f9fa; border-radius: 10px; font-size: 14px; }
+        .pd-meta span { color: #495057; }
+        .pd-meta strong { color: #212529; }
+        .pd-rating { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .pd-rating .stars { font-size: 18px; color: #ffc107; letter-spacing: 1px; }
+        .pd-rating .stars .empty { color: #dee2e6; }
+        .pd-rating .score { font-weight: 700; color: #212529; }
+        .pd-rating .count { font-size: 13px; color: #868e96; }
+        .pd-price { display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: linear-gradient(135deg, #fff5f5 0%, #fff 100%); border: 2px solid #ffe3e3; border-radius: 12px; margin-bottom: 20px; }
+        .pd-price .current { font-size: 28px; font-weight: 800; color: #e03131; }
+        .pd-price .original { font-size: 16px; color: #868e96; text-decoration: line-through; }
+        .pd-price .badge { background: #e03131; color: #fff; padding: 5px 10px; border-radius: 16px; font-size: 13px; font-weight: 700; }
+        .pd-desc { margin-bottom: 20px; }
+        .pd-desc h4 { font-size: 15px; font-weight: 600; color: #495057; margin: 0 0 10px; }
+        .pd-desc p { font-size: 14px; line-height: 1.7; color: #495057; margin: 0; }
+        .pd-details { margin-bottom: 20px; }
+        .pd-details h4 { font-size: 15px; font-weight: 600; color: #495057; margin: 0 0 12px; }
+        .pd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .pd-grid .item { display: flex; justify-content: space-between; padding: 10px 14px; background: #f8f9fa; border-radius: 8px; font-size: 13px; }
+        .pd-grid .item .lbl { color: #868e96; }
+        .pd-grid .item .val { font-weight: 600; color: #212529; }
+        .pd-purchase { padding: 20px; background: #fff; border: 1px solid #e9ecef; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .pd-qty { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+        .pd-qty label { font-size: 14px; font-weight: 600; color: #495057; }
+        .pd-qty .controls { display: flex; border: 2px solid #e9ecef; border-radius: 8px; overflow: hidden; }
+        .pd-qty .qbtn { width: 36px; height: 36px; border: none; background: #f8f9fa; font-size: 16px; cursor: pointer; }
+        .pd-qty .qbtn:hover { background: #e9ecef; }
+        .pd-qty .qinput { width: 50px; height: 36px; border: none; text-align: center; font-size: 15px; font-weight: 600; }
+        .pd-qty .stock { font-size: 12px; color: #40c057; }
+        .pd-btns { display: flex; gap: 10px; margin-bottom: 16px; }
+        .pd-btns .btn-cart { flex: 2; padding: 14px; background: linear-gradient(135deg, #228be6 0%, #1c7ed6 100%); color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .pd-btns .btn-cart:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(34,139,230,0.35); }
+        .pd-btns .btn-wish { flex: 1; padding: 14px; background: #fff; color: #e03131; border: 2px solid #ffe3e3; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; }
+        .pd-btns .btn-wish:hover { background: #fff5f5; }
+        .pd-benefits { display: flex; flex-direction: column; gap: 8px; }
+        .pd-benefits .item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #495057; }
+        .pd-benefits .icon { width: 22px; height: 22px; background: #d3f9d8; color: #2f9e44; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; }
+    </style>
 </head>
 <body>
     <jsp:include page="/WEB-INF/jsp/common/header.jsp"/>
@@ -17,140 +63,124 @@
     <main class="main">
         <div class="container">
             <!-- Breadcrumb -->
-            <div class="breadcrumb">
-                <a href="${pageContext.request.contextPath}/">Trang chủ</a>
-                <span> / </span>
-                <a href="${pageContext.request.contextPath}/products">Sản phẩm</a>
-                <span> / </span>
-                <c:if test="${product != null}">
-                    <span>${product.title}</span>
-                </c:if>
-                <c:if test="${product == null}">
-                    <span>Chi tiết sách</span>
-                </c:if>
-            </div>
+            <nav style="margin: 20px 0; font-size: 14px; color: #868e96;">
+                <a href="${pageContext.request.contextPath}/" style="color: #228be6; text-decoration: none;">Trang chủ</a>
+                <span style="margin: 0 8px;">›</span>
+                <a href="${pageContext.request.contextPath}/products" style="color: #228be6; text-decoration: none;">Sản phẩm</a>
+                <span style="margin: 0 8px;">›</span>
+                <span style="color: #495057;">${product != null ? product.title : 'Chi tiết sách'}</span>
+            </nav>
 
             <!-- Error Message -->
             <c:if test="${error != null}">
-                <div class="alert alert-danger" style="padding: 15px; margin: 20px 0; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 4px;">
-                    ${error}
-                    <a href="${pageContext.request.contextPath}/products" style="display: block; margin-top: 10px;">Quay lại danh sách sản phẩm</a>
+                <div style="padding: 20px; margin: 20px 0; background: #fff5f5; color: #c92a2a; border: 1px solid #ffe3e3; border-radius: 12px;">
+                    <strong>⚠️ ${error}</strong>
+                    <a href="${pageContext.request.contextPath}/products" style="display: block; margin-top: 10px; color: #228be6; text-decoration: none;">← Quay lại danh sách sản phẩm</a>
                 </div>
             </c:if>
 
             <!-- Product Detail Section -->
             <c:if test="${product != null}">
-                <section class="product-detail">
-                    <div class="product-images">
-                        <div class="main-image">
-                            <img src="${product.image}" alt="${product.title}" class="main-img"
-                                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22%3E%3Crect fill=%22%236366f1%22 width=%22300%22 height=%22400%22/%3E%3C/svg%3E'">
+                <div class="pd-wrapper">
+                    <!-- Left: Image -->
+                    <div class="pd-gallery">
+                        <div class="img-box" style="position: relative;">
+                            <img id="main-image" src="${product.image}" alt="${product.title}"
+                                onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22280%22 height=%22380%22%3E%3Crect fill=%22%236366f1%22 width=%22280%22 height=%22380%22/%3E%3Ctext x=%22140%22 y=%22190%22 text-anchor=%22middle%22 fill=%22white%22 font-size=%2240%22%3E📚%3C/text%3E%3C/svg%3E'">
+                            <c:if test="${product.discount > 0}">
+                                <span style="position: absolute; top: 16px; left: 16px; background: #e03131; color: #fff; padding: 6px 12px; border-radius: 16px; font-weight: 700; font-size: 13px;">-${product.discount}%</span>
+                            </c:if>
                         </div>
                     </div>
 
-                    <div class="product-info">
-                        <h1 class="product-title">${product.title}</h1>
+                    <!-- Right: Info -->
+                    <div class="pd-info">
+                        <h1 id="product-title" class="pd-title">${product.title}</h1>
                         
-                        <div class="product-meta">
-                            <span class="author">Tác giả: ${product.authorName}</span>
-                            <span class="publisher">NXB: ${product.publisherName}</span>
+                        <!-- Meta -->
+                        <div class="pd-meta">
+                            <span>Tác giả: <strong id="product-author">${product.authorName}</strong></span>
+                            <span style="color: #dee2e6;">|</span>
+                            <span>NXB: <strong>${product.publisherName}</strong></span>
+                            <span style="color: #dee2e6;">|</span>
+                            <span>Năm: <strong>${product.year}</strong></span>
                         </div>
 
-                        <div class="product-rating">
+                        <!-- Rating -->
+                        <div class="pd-rating">
                             <span class="stars">
                                 <c:forEach var="i" begin="1" end="5">
                                     <c:choose>
                                         <c:when test="${i <= product.rating}">★</c:when>
-                                        <c:otherwise>☆</c:otherwise>
+                                        <c:otherwise><span class="empty">★</span></c:otherwise>
                                     </c:choose>
                                 </c:forEach>
                             </span>
-                            <span class="review-count">(${product.reviews} đánh giá)</span>
+                            <span class="score">${product.rating}/5</span>
+                            <span class="count">(${product.reviews} đánh giá)</span>
                         </div>
 
-                        <div class="product-price">
-                            <span class="original-price">
-                                <fmt:formatNumber value="${product.originalPrice}" pattern="#,###"/>đ
-                            </span>
-                            <span class="sale-price">
-                                <fmt:formatNumber value="${product.price}" pattern="#,###"/>đ
-                            </span>
+                        <!-- Price -->
+                        <div class="pd-price">
+                            <span id="sale-price" class="current"><fmt:formatNumber value="${product.price}" pattern="#,###"/>đ</span>
+                            <c:if test="${product.originalPrice > product.price}">
+                                <span class="original"><fmt:formatNumber value="${product.originalPrice}" pattern="#,###"/>đ</span>
+                            </c:if>
                             <c:if test="${product.discount > 0}">
-                                <span class="discount-badge">-${product.discount}%</span>
+                                <span class="badge">Giảm ${product.discount}%</span>
                             </c:if>
                         </div>
 
-                        <div class="product-description">
-                            <h3>Mô Tả</h3>
+                        <!-- Description -->
+                        <div class="pd-desc">
+                            <h4>📝 Mô Tả Sách</h4>
                             <p>${product.description}</p>
                         </div>
 
-                        <div class="product-details">
-                            <h3>Thông Tin Chi Tiết</h3>
-                            <table class="detail-table">
-                                <tr>
-                                    <td>Tác Giả:</td>
-                                    <td>${product.authorName}</td>
-                                </tr>
-                                <tr>
-                                    <td>Nhà Xuất Bản:</td>
-                                    <td>${product.publisherName}</td>
-                                </tr>
-                                <tr>
-                                    <td>Năm Xuất Bản:</td>
-                                    <td>${product.year}</td>
-                                </tr>
-                                <tr>
-                                    <td>Số Trang:</td>
-                                    <td>${product.pages}</td>
-                                </tr>
-                                <tr>
-                                    <td>Kích Thước:</td>
-                                    <td>${product.size}</td>
-                                </tr>
-                                <tr>
-                                    <td>Hình Thức:</td>
-                                    <td>${product.format}</td>
-                                </tr>
-                                <tr>
-                                    <td>Trạng Thái:</td>
-                                    <td>${product.status}</td>
-                                </tr>
-                            </table>
+                        <!-- Details Grid -->
+                        <div class="pd-details">
+                            <h4>📋 Thông Tin Chi Tiết</h4>
+                            <div class="pd-grid">
+                                <div class="item"><span class="lbl">Số trang</span><span class="val">${product.pages} trang</span></div>
+                                <div class="item"><span class="lbl">Kích thước</span><span class="val">${product.size}</span></div>
+                                <div class="item"><span class="lbl">Hình thức</span><span class="val">${product.format}</span></div>
+                                <div class="item"><span class="lbl">Tình trạng</span><span class="val" style="color: #40c057;">✓ ${product.status}</span></div>
+                            </div>
                         </div>
 
-                        <!-- Purchase Section -->
-                        <div class="purchase-section">
-                            <div class="quantity-selector">
-                                <label for="quantity">Số Lượng:</label>
-                                <div class="quantity-control">
-                                    <button class="qty-btn" id="qty-decrease">−</button>
-                                    <input type="number" id="quantity" value="1" min="1" max="${product.stock}" class="qty-input">
-                                    <button class="qty-btn" id="qty-increase">+</button>
+                        <!-- Purchase Box -->
+                        <div class="pd-purchase">
+                            <div class="pd-qty">
+                                <label>Số lượng:</label>
+                                <div class="controls">
+                                    <button class="qbtn" id="qty-decrease">−</button>
+                                    <input type="number" id="quantity" value="1" min="1" max="${product.stock}" class="qinput">
+                                    <button class="qbtn" id="qty-increase">+</button>
                                 </div>
+                                <span class="stock">✓ Còn ${product.stock} sản phẩm</span>
                             </div>
 
-                            <button class="btn btn-primary btn-lg" id="add-to-cart-btn">
-                                🛒 Thêm Vào Giỏ Hàng
-                            </button>
-                            <button class="btn btn-outline btn-lg" id="add-to-wishlist-btn">
-                                ❤️ Yêu Thích
-                            </button>
-                        </div>
+                            <div class="pd-btns">
+                                <button class="btn-cart" id="add-to-cart-btn">🛒 Thêm Vào Giỏ Hàng</button>
+                                <button class="btn-wish" id="add-to-wishlist-btn">❤️</button>
+                            </div>
 
-                        <!-- Shipping Info -->
-                        <div class="shipping-info">
-                            <p>✓ Miễn phí vận chuyển cho đơn hàng từ 100.000đ</p>
-                            <p>✓ Hàng chính hãng, có bảo hành</p>
-                            <p>✓ Hỗ trợ đổi trả trong 30 ngày</p>
+                            <div class="pd-benefits">
+                                <div class="item"><span class="icon">✓</span><span>Miễn phí vận chuyển cho đơn từ 100.000đ</span></div>
+                                <div class="item"><span class="icon">✓</span><span>Sách chính hãng 100%</span></div>
+                                <div class="item"><span class="icon">✓</span><span>Đổi trả miễn phí trong 30 ngày</span></div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
                 <!-- Related Products Section -->
                 <c:if test="${not empty relatedProducts}">
-                    <section class="related-products-section" style="margin-top: 40px;">
-                        <h2 class="section-title">Sách Liên Quan</h2>
+                    <section style="margin: 50px 0 30px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                            <h2 style="font-size: 22px; font-weight: 700; color: #212529; margin: 0;">📚 Sách Liên Quan</h2>
+                            <a href="${pageContext.request.contextPath}/products?category=${product.categoryId}" style="font-size: 14px; color: #228be6; text-decoration: none;">Xem tất cả →</a>
+                        </div>
                         <div class="products-grid">
                             <c:forEach var="book" items="${relatedProducts}">
                                 <div class="product-card" data-product-id="${book.id}">
@@ -196,17 +226,17 @@
 
     <script>
         const contextPath = '${pageContext.request.contextPath}';
-        const productId = <c:if test="${product != null}">${product.id}</c:if><c:if test="${product == null}">null</c:if>;
+        const currentProductId = <c:if test="${product != null}">${product.id}</c:if><c:if test="${product == null}">null</c:if>;
 
         // Quantity control
-        document.getElementById('qty-decrease').addEventListener('click', function() {
+        document.getElementById('qty-decrease')?.addEventListener('click', function() {
             const qtyInput = document.getElementById('quantity');
             if (parseInt(qtyInput.value) > 1) {
                 qtyInput.value = parseInt(qtyInput.value) - 1;
             }
         });
 
-        document.getElementById('qty-increase').addEventListener('click', function() {
+        document.getElementById('qty-increase')?.addEventListener('click', function() {
             const qtyInput = document.getElementById('quantity');
             const maxStock = parseInt(qtyInput.getAttribute('max'));
             if (parseInt(qtyInput.value) < maxStock) {
@@ -215,38 +245,17 @@
         });
 
         // Add to cart
-        document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+        document.getElementById('add-to-cart-btn')?.addEventListener('click', function() {
             const quantity = parseInt(document.getElementById('quantity').value) || 1;
             
-            // Get product info from page with null checks
-            const productTitleEl = document.getElementById('product-title');
-            const productImageEl = document.getElementById('main-image');
-            const productAuthorEl = document.getElementById('product-author');
-            const productPriceEl = document.getElementById('sale-price');
-            
-            if (!productTitleEl || !productImageEl) {
-                alert('Lỗi: Không tìm thấy thông tin sản phẩm');
-                return;
-            }
-            
-            const productTitle = productTitleEl.textContent || '';
-            const productImage = productImageEl.src || '';
-            const productAuthor = productAuthorEl ? productAuthorEl.textContent : '';
-            const productPrice = productPriceEl ? productPriceEl.textContent : '0đ';
-            
-            // Parse product ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = parseInt(urlParams.get('id'));
-            
-            if (!productId) {
-                alert('Lỗi: Không tìm thấy ID sản phẩm');
-                return;
-            }
-            
+            const productTitle = document.getElementById('product-title')?.textContent || '';
+            const productImage = document.getElementById('main-image')?.src || '';
+            const productAuthor = document.getElementById('product-author')?.textContent || '';
+            const productPrice = document.getElementById('sale-price')?.textContent || '0đ';
             const priceValue = parseInt(productPrice.replace(/\D/g, '')) || 0;
             
             const product = {
-                id: productId,
+                id: currentProductId,
                 title: productTitle,
                 price: priceValue,
                 image: productImage,
@@ -254,33 +263,39 @@
                 stock: 999
             };
 
-            // Check if cart is initialized
-            if (typeof cart === 'undefined') {
-                console.error('Cart not defined');
-                alert('Lỗi: Giỏ hàng chưa sẵn sàng. Vui lòng tải lại trang.');
-                return;
-            }
-            
-            if (!cart || typeof cart.addProduct !== 'function') {
-                console.error('Cart.addProduct is not a function', cart);
-                alert('Lỗi: Không thể thêm vào giỏ hàng. Vui lòng tải lại trang.');
-                return;
-            }
-            
-            cart.addProduct(product, quantity);
+            // Check login first
+            fetch(contextPath + '/api/check-login')
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.loggedIn) {
+                        const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+                        window.location.href = contextPath + '/login?returnUrl=' + returnUrl;
+                        return;
+                    }
+                    if (typeof cart !== 'undefined' && cart.addProduct) {
+                        cart.addProduct(product, quantity);
+                    } else {
+                        alert('Lỗi: Giỏ hàng chưa sẵn sàng.');
+                    }
+                })
+                .catch(() => {
+                    if (typeof cart !== 'undefined' && cart.addProduct) {
+                        cart.addProduct(product, quantity);
+                    }
+                });
         });
 
-        // Add to wishlist (placeholder - will implement later)
-        document.getElementById('add-to-wishlist-btn').addEventListener('click', function() {
-            alert('Tính năng wishlist sẽ được kích hoạt sau khi tích hợp đầy đủ');
+        // Add to wishlist
+        document.getElementById('add-to-wishlist-btn')?.addEventListener('click', function() {
+            alert('Tính năng yêu thích sẽ được kích hoạt sớm!');
         });
 
         // Related products click
-        document.querySelectorAll('.related-products-section .product-card').forEach(card => {
+        document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', function(e) {
-                if (e.target.closest('.btn')) return;
+                if (e.target.closest('.btn') || e.target.closest('.add-to-cart-btn')) return;
                 const id = this.getAttribute('data-product-id');
-                window.location.href = contextPath + '/product?id=' + id;
+                if (id) window.location.href = contextPath + '/product?id=' + id;
             });
         });
     </script>

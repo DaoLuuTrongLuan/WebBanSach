@@ -45,6 +45,7 @@
                     <a href="${pageContext.request.contextPath}/login" class="btn btn-sm btn-primary">Đăng Nhập</a>
                 </c:if>
                 <c:if test="${not empty sessionScope.user}">
+                    <a href="${pageContext.request.contextPath}/orders" class="btn btn-sm btn-outline" style="margin-left: 8px;" title="Lịch sử đơn hàng">📦 Đơn Hàng</a>
                     <span style="color: var(--text-dark); margin-left: 8px;">${sessionScope.user.fullname}</span>
                     <a href="${pageContext.request.contextPath}/logout" class="btn btn-sm btn-outline" style="margin-left: 8px;">Đăng Xuất</a>
                 </c:if>

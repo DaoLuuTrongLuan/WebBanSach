@@ -25,10 +25,11 @@
                     Cảm ơn bạn đã mua sắm tại BookStore. Đơn hàng của bạn đã được tiếp nhận.
                 </p>
 
-                <c:if test="${param.orderId != null}">
+                <c:set var="displayOrderId" value="${not empty order ? order.id : (not empty param.id ? param.id : param.orderId)}" />
+                <c:if test="${not empty displayOrderId}">
                     <div style="background-color: #f0f7ff; border: 2px solid #2196F3; border-radius: 8px; padding: 20px; margin: 30px 0; display: inline-block; min-width: 300px;">
                         <p style="margin: 0 0 12px 0; font-size: 14px; color: #666;">Mã đơn hàng của bạn:</p>
-                        <p style="margin: 0; font-size: 28px; font-weight: bold; color: #2196F3;">#${param.orderId}</p>
+                        <p style="margin: 0; font-size: 28px; font-weight: bold; color: #2196F3;">#${displayOrderId}</p>
                     </div>
                 </c:if>
 
@@ -57,7 +58,10 @@
                 </div>
 
                 <div style="margin: 40px 0;">
-                    <a href="${pageContext.request.contextPath}/" class="btn btn-primary" style="display: inline-block; padding: 12px 30px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; margin-right: 12px;">
+                    <a href="${pageContext.request.contextPath}/orders" class="btn btn-primary" style="display: inline-block; padding: 12px 30px; background-color: #2196F3; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; margin-right: 12px;">
+                        📦 Xem Đơn Hàng
+                    </a>
+                    <a href="${pageContext.request.contextPath}/" class="btn btn-outline" style="display: inline-block; padding: 12px 30px; background-color: white; color: #333; text-decoration: none; border: 1px solid #ddd; border-radius: 4px; font-weight: bold; margin-right: 12px;">
                         Về Trang Chủ
                     </a>
                     <a href="${pageContext.request.contextPath}/products" class="btn btn-outline" style="display: inline-block; padding: 12px 30px; background-color: white; color: #333; text-decoration: none; border: 1px solid #ddd; border-radius: 4px; font-weight: bold;">
@@ -71,10 +75,15 @@
                     
                     <div style="display: grid; grid-template-columns: 150px 1fr; gap: 12px; row-gap: 12px;">
                         <strong>Mã Đơn Hàng:</strong>
-                        <span><c:if test="${param.orderId != null}">#${param.orderId}</c:if><c:if test="${param.orderId == null}">Đang xử lý</c:if></span>
+                        <span><c:if test="${not empty displayOrderId}">#${displayOrderId}</c:if><c:if test="${empty displayOrderId}">Đang xử lý</c:if></span>
 
                         <strong>Trạng Thái:</strong>
-                        <span style="color: #4CAF50; font-weight: bold;">Chờ Xác Nhận</span>
+                        <span style="color: #4CAF50; font-weight: bold;">
+                            <c:choose>
+                                <c:when test="${not empty order && order.paymentStatus == 'paid'}">Đã Thanh Toán ✓</c:when>
+                                <c:otherwise>Chờ Xác Nhận</c:otherwise>
+                            </c:choose>
+                        </span>
 
                         <strong>Ngày Đặt:</strong>
                         <span>

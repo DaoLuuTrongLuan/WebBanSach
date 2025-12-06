@@ -276,7 +276,8 @@ function attachProductCardHandlers() {
         onEvent(card, 'click', function(e) {
             if (e.target.closest('.btn')) return;
             const productId = card.dataset.productId;
-            window.location.href = `product-detail.html?id=${productId}`;
+            const contextPath = getContextPath();
+            window.location.href = `${contextPath}/product?id=${productId}`;
         });
     });
 

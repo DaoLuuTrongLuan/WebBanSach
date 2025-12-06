@@ -49,15 +49,20 @@ document.addEventListener('DOMContentLoaded', function() {
     cart.updateCartUI();
 
     // Page-specific initialization
-    if (path.includes('index.html') || path.endsWith('/') || path === '/webbansach' || path === '/webbansach/') {
+    // Note: For JSP pages, products are rendered server-side, so we skip JS re-rendering
+    // Only initialize JS-based pages for static HTML templates
+    if (path.includes('index.html')) {
         initializeHomePage();
-    } else if (path.includes('products') || path.includes('products.html')) {
+    } else if (path.includes('products.html')) {
+        // Only for static HTML template, not JSP servlet
         initializeProductsPage();
-    } else if (path.includes('product?') || path.includes('product-detail.html')) {
+    } else if (path.includes('product-detail.html')) {
+        // Only for static HTML template
         initializeProductDetailPage();
-    } else if (path.includes('checkout') || path.includes('checkout.html')) {
+    } else if (path.includes('checkout.html')) {
         initializeCheckoutPage();
     }
+    // JSP pages (/, /products, /product?id=, /checkout) handle their own rendering
 
     // Global event handlers
     initializeGlobalHandlers();

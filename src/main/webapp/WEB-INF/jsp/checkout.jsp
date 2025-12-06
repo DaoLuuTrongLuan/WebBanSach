@@ -157,9 +157,18 @@
 
                             <div class="radio-group" style="margin-bottom: 16px;">
                                 <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #4CAF50; border-radius: 4px; cursor: pointer; margin-bottom: 12px; background-color: #f0f8f0;">
-                                    <input type="radio" name="payment" value="vnpay" checked style="margin-right: 12px;">
+                                    <input type="radio" name="payment" value="vnpay" style="margin-right: 12px;">
                                     <span class="radio-label">
                                         <strong style="color: #4CAF50;">✓ VNPAY</strong> - Thanh toán qua cổng VNPAY (Khả dụng)
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div class="radio-group" style="margin-bottom: 16px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 2px solid #2196F3; border-radius: 4px; cursor: pointer; margin-bottom: 12px; background-color: #e3f2fd;">
+                                    <input type="radio" name="payment" value="test" checked style="margin-right: 12px;">
+                                    <span class="radio-label">
+                                        <strong style="color: #2196F3;">🧪 TEST</strong> - Thanh toán thành công ngay (Dành cho test)
                                     </span>
                                 </label>
                             </div>
@@ -437,6 +446,44 @@
         }
 
         function placeOrder() {
+            // Check if TEST payment is selected
+            if (checkoutData.payment === 'test') {
+                // Create order with test payment - immediately marked as paid
+                const testPaymentData = {
+                    fullname: checkoutData.fullname,
+                    phone: checkoutData.phone,
+                    email: checkoutData.email,
+                    address: checkoutData.address + ', ' + checkoutData.district + ', ' + checkoutData.city,
+                    shipping: checkoutData.shipping,
+                    notes: checkoutData.notes || '',
+                    total: checkoutData.total,
+                    items: checkoutData.cartItems
+                };
+
+                fetch(contextPath + '/api/test-payment', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(testPaymentData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear cart and redirect to success page
+                        localStorage.removeItem('bookstore_cart');
+                        window.location.href = data.redirectUrl || (contextPath + '/order-success?id=' + data.orderId);
+                    } else {
+                        alert('Lỗi: ' + (data.error || 'Không thể tạo đơn hàng'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra: ' + error);
+                });
+                return;
+            }
+            
             // Check if VNPAY is selected
             if (checkoutData.payment === 'vnpay') {
                 // Create VNPAY payment URL using URLSearchParams (compatible with servlet)
@@ -533,6 +580,7 @@
                 case 'transfer': return 'Chuyển Khoản Ngân Hàng';
                 case 'card': return 'Thẻ Tín Dụng / Debit';
                 case 'vnpay': return 'VNPAY';
+                case 'test': return '🧪 Test Payment (Thanh toán ngay)';
                 default: return 'Thanh Toán Khi Nhận Hàng (COD)';
             }
         }
