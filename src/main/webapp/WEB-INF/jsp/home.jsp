@@ -138,11 +138,115 @@
 
     <jsp:include page="/WEB-INF/jsp/common/footer.jsp"/>
     <script>
-        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                alert('Tính năng sẽ được kích hoạt sau khi tích hợp đầy đủ');
-            });
+        // Initialize cart event handlers on featured and bestseller products
+        document.addEventListener('DOMContentLoaded', function() {
+            const contextPath = '${pageContext.request.contextPath}';
+            
+            // Featured products carousel
+            initializeFeaturedCarousel(contextPath);
+            
+            // Bestsellers carousel
+            initializeBestsellersCarousel(contextPath);
         });
+
+        function initializeFeaturedCarousel(contextPath) {
+            const featuredContainer = document.getElementById('featured-products');
+            if (!featuredContainer) return;
+
+            featuredContainer.querySelectorAll('.product-card').forEach(card => {
+                const productId = card.dataset.productId;
+                const productTitle = card.querySelector('.product-name').textContent;
+                const productPrice = card.querySelector('.product-sale-price').textContent;
+                const productImage = card.querySelector('img').src;
+                const productAuthor = card.querySelector('.product-author').textContent;
+
+                // Click on card to go to product detail
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.btn')) {
+                        window.location.href = contextPath + '/product?id=' + productId;
+                    }
+                });
+
+                // Add to cart button
+                const addBtn = card.querySelector('.add-to-cart-btn');
+                if (addBtn) {
+                    addBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        addToCartFromFeatured(productId, productTitle, productPrice, productImage, productAuthor);
+                    });
+                }
+            });
+
+            // Initialize carousel
+            const carousel = featuredContainer.closest('.carousel');
+            if (carousel) {
+                setTimeout(() => new Carousel(carousel), 100);
+            }
+        }
+
+        function initializeBestsellersCarousel(contextPath) {
+            const bestsellersContainer = document.getElementById('bestsellers-products');
+            if (!bestsellersContainer) return;
+
+            bestsellersContainer.querySelectorAll('.product-card').forEach(card => {
+                const productId = card.dataset.productId;
+                const productTitle = card.querySelector('.product-name').textContent;
+                const productPrice = card.querySelector('.product-sale-price').textContent;
+                const productImage = card.querySelector('img').src;
+                const productAuthor = card.querySelector('.product-author').textContent;
+
+                // Click on card to go to product detail
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.btn')) {
+                        window.location.href = contextPath + '/product?id=' + productId;
+                    }
+                });
+
+                // Add to cart button
+                const addBtn = card.querySelector('.add-to-cart-btn');
+                if (addBtn) {
+                    addBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        addToCartFromFeatured(productId, productTitle, productPrice, productImage, productAuthor);
+                    });
+                }
+            });
+
+            // Initialize carousel
+            const carousel = bestsellersContainer.closest('.carousel');
+            if (carousel) {
+                setTimeout(() => new Carousel(carousel), 100);
+            }
+        }
+
+        function addToCartFromFeatured(productId, title, price, image, author) {
+            // Parse price from formatted string (e.g., "145.000đ" -> 145000)
+            const priceValue = parseInt(price.replace(/\D/g, '')) || 0;
+            
+            const product = {
+                id: parseInt(productId),
+                title: title || 'Sản phẩm',
+                price: priceValue,
+                image: image || '',
+                author: author || '',
+                stock: 999
+            };
+
+            // Check if cart is initialized
+            if (typeof cart === 'undefined') {
+                console.error('Cart not defined');
+                alert('Lỗi: Giỏ hàng chưa sẵn sàng. Vui lòng tải lại trang.');
+                return;
+            }
+            
+            if (!cart || typeof cart.addProduct !== 'function') {
+                console.error('Cart.addProduct is not a function', cart);
+                alert('Lỗi: Không thể thêm vào giỏ hàng. Vui lòng tải lại trang.');
+                return;
+            }
+            
+            cart.addProduct(product, 1);
+        }
     </script>
 </body>
 </html>

@@ -179,6 +179,52 @@ public class OrderDAO {
     }
     
     /**
+     * Update payment status for VNPAY
+     */
+    public static boolean updatePaymentStatus(int orderId, String paymentStatus, String vnpTransactionNo) throws SQLException {
+        String sql = "UPDATE orders SET payment_status = ?, vnp_transaction_no = ? WHERE id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, paymentStatus);
+            ps.setString(2, vnpTransactionNo);
+            ps.setInt(3, orderId);
+            
+            int result = ps.executeUpdate();
+            return result > 0;
+        } finally {
+            closeResources(ps, conn);
+        }
+    }
+    
+    /**
+     * Get order by VNPAY transaction reference
+     */
+    public static Order getOrderByVnpTxnRef(String vnpTxnRef) throws SQLException {
+        String sql = "SELECT * FROM orders WHERE vnp_txn_ref = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            conn = DBConnection.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, vnpTxnRef);
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToOrder(rs);
+            }
+            return null;
+        } finally {
+            closeResources(rs, ps, conn);
+        }
+    }
+    
+    /**
      * Map ResultSet to Order object
      */
     private static Order mapResultSetToOrder(ResultSet rs) throws SQLException {
@@ -196,6 +242,16 @@ public class OrderDAO {
         order.setPaymentMethod(rs.getString("payment_method"));
         order.setTotal(rs.getLong("total"));
         order.setStatus(rs.getString("status"));
+        
+        // VNPAY Fields (if columns exist)
+        try {
+            order.setVnpTxnRef(rs.getString("vnp_txn_ref"));
+            order.setVnpTransactionNo(rs.getString("vnp_transaction_no"));
+            order.setPaymentStatus(rs.getString("payment_status"));
+        } catch (SQLException e) {
+            // Columns might not exist yet, ignore
+        }
+        
         return order;
     }
     

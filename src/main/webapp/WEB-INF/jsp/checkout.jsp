@@ -155,6 +155,15 @@
                                 </label>
                             </div>
 
+                            <div class="radio-group" style="margin-bottom: 16px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; margin-bottom: 12px;">
+                                    <input type="radio" name="payment" value="vnpay" style="margin-right: 12px;">
+                                    <span class="radio-label">
+                                        <strong>VNPAY</strong> - Thanh toán qua cổng VNPAY
+                                    </span>
+                                </label>
+                            </div>
+
                             <div id="card-details" style="display:none; padding: 16px; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 16px;">
                                 <div class="form-group" style="margin-bottom: 16px;">
                                     <label for="card-number" style="display: block; margin-bottom: 8px; font-weight: bold;">Số Thẻ</label>
@@ -236,10 +245,16 @@
         });
 
         function loadCartToCheckout() {
-            const cartData = localStorage.getItem('cart');
-            const cart = cartData ? JSON.parse(cartData) : [];
+            console.log('loadCartToCheckout called');
             
-            if (!cart || cart.length === 0) {
+            const cartData = localStorage.getItem('bookstore_cart');
+            console.log('Cart data from localStorage:', cartData);
+            
+            const cart = cartData ? JSON.parse(cartData) : [];
+            console.log('Parsed cart:', cart);
+            console.log('Cart length:', cart.length);
+            
+            if (!cart || !Array.isArray(cart) || cart.length === 0) {
                 alert('Giỏ hàng của bạn trống. Quay lại để thêm sản phẩm.');
                 window.location.href = contextPath + '/cart';
                 return;
@@ -247,22 +262,31 @@
 
             // Display cart items in checkout sidebar
             const checkoutItemsDiv = document.getElementById('checkout-items');
+            if (!checkoutItemsDiv) {
+                console.error('checkout-items element not found!');
+                return;
+            }
+            
             checkoutItemsDiv.innerHTML = '';
 
             let subtotal = 0;
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
+                console.log('Item ' + index + ':', item);
+                
                 const itemDiv = document.createElement('div');
                 itemDiv.style.cssText = 'padding: 8px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; margin-bottom: 8px;';
-                itemDiv.innerHTML = `
-                    <div style="flex: 1;">
-                        <div style="font-size: 14px; font-weight: bold;">${item.title}</div>
-                        <div style="font-size: 12px; color: #666;">x${item.quantity}</div>
-                    </div>
-                    <div style="font-weight: bold;">${formatPrice(item.price * item.quantity)}</div>
-                `;
+                const itemTotal = item.price * item.quantity;
+                itemDiv.innerHTML = 
+                    '<div style="flex: 1;">' +
+                        '<div style="font-size: 14px; font-weight: bold;">' + (item.title || 'Unknown') + '</div>' +
+                        '<div style="font-size: 12px; color: #666;">x' + (item.quantity || 1) + '</div>' +
+                    '</div>' +
+                    '<div style="font-weight: bold;">' + formatPrice(itemTotal) + '</div>';
                 checkoutItemsDiv.appendChild(itemDiv);
-                subtotal += item.price * item.quantity;
+                subtotal += itemTotal;
             });
+
+            console.log('All items processed. Total subtotal:', subtotal);
 
             // Store cart for later
             checkoutData.cartItems = cart;
@@ -368,25 +392,22 @@
 
         function populateConfirmation() {
             const summaryDiv = document.getElementById('order-summary');
-            summaryDiv.innerHTML = `
-                <div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                    <h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Thông Tin Giao Hàng</h3>
-                    <p style="margin: 4px 0;"><strong>Họ tên:</strong> ${checkoutData.fullname}</p>
-                    <p style="margin: 4px 0;"><strong>Số điện thoại:</strong> ${checkoutData.phone}</p>
-                    <p style="margin: 4px 0;"><strong>Email:</strong> ${checkoutData.email}</p>
-                    <p style="margin: 4px 0;"><strong>Địa chỉ:</strong> ${checkoutData.address}, ${checkoutData.district}, ${checkoutData.city}</p>
-                </div>
-
-                <div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-                    <h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Phương Thức Vận Chuyển</h3>
-                    <p style="margin: 4px 0;"><strong>${getShippingName(checkoutData.shipping)}</strong></p>
-                </div>
-
-                <div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px;">
-                    <h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Phương Thức Thanh Toán</h3>
-                    <p style="margin: 4px 0;"><strong>${getPaymentName(checkoutData.payment)}</strong></p>
-                </div>
-            `;
+            summaryDiv.innerHTML = 
+                '<div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 16px;">' +
+                    '<h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Thông Tin Giao Hàng</h3>' +
+                    '<p style="margin: 4px 0;"><strong>Họ tên:</strong> ' + (checkoutData.fullname || '') + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Số điện thoại:</strong> ' + (checkoutData.phone || '') + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Email:</strong> ' + (checkoutData.email || '') + '</p>' +
+                    '<p style="margin: 4px 0;"><strong>Địa chỉ:</strong> ' + (checkoutData.address || '') + ', ' + (checkoutData.district || '') + ', ' + (checkoutData.city || '') + '</p>' +
+                '</div>' +
+                '<div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px; margin-bottom: 16px;">' +
+                    '<h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Phương Thức Vận Chuyển</h3>' +
+                    '<p style="margin: 4px 0;"><strong>' + (getShippingName(checkoutData.shipping) || '') + '</strong></p>' +
+                '</div>' +
+                '<div style="background-color: #f9f9f9; padding: 16px; border-radius: 8px;">' +
+                    '<h3 style="margin-top: 0; font-size: 16px; font-weight: bold; margin-bottom: 12px;">Phương Thức Thanh Toán</h3>' +
+                    '<p style="margin: 4px 0;"><strong>' + (getPaymentName(checkoutData.payment) || '') + '</strong></p>' +
+                '</div>';
         }
 
         function goToStep(step) {
@@ -416,7 +437,45 @@
         }
 
         function placeOrder() {
-            const formData = new FormData();
+            // Check if VNPAY is selected
+            if (checkoutData.payment === 'vnpay') {
+                // Create VNPAY payment URL using URLSearchParams (compatible with servlet)
+                const vnpayData = new URLSearchParams();
+                vnpayData.append('fullname', checkoutData.fullname);
+                vnpayData.append('phone', checkoutData.phone);
+                vnpayData.append('email', checkoutData.email);
+                vnpayData.append('address', checkoutData.address);
+                vnpayData.append('city', checkoutData.city);
+                vnpayData.append('district', checkoutData.district);
+                vnpayData.append('shipping', checkoutData.shipping);
+                vnpayData.append('total', checkoutData.total);
+
+                fetch(contextPath + '/vnpay/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: vnpayData.toString()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Clear cart and redirect to VNPAY
+                        localStorage.removeItem('bookstore_cart');
+                        window.location.href = data.paymentUrl;
+                    } else {
+                        alert('Lỗi: ' + (data.error || 'Không thể tạo URL thanh toán'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra: ' + error);
+                });
+                return;
+            }
+
+            // For COD, Transfer, Card - create order normally
+            const formData = new URLSearchParams();
             formData.append('action', 'place_order');
             formData.append('fullname', checkoutData.fullname);
             formData.append('phone', checkoutData.phone);
@@ -424,7 +483,7 @@
             formData.append('address', checkoutData.address);
             formData.append('city', checkoutData.city);
             formData.append('district', checkoutData.district);
-            formData.append('notes', checkoutData.notes);
+            formData.append('notes', checkoutData.notes || '');
             formData.append('shipping', checkoutData.shipping);
             formData.append('payment', checkoutData.payment);
             formData.append('cartItems', JSON.stringify(checkoutData.cartItems));
@@ -432,12 +491,15 @@
 
             fetch(contextPath + '/checkout', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: formData.toString()
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    localStorage.removeItem('cart');
+                    localStorage.removeItem('bookstore_cart');
                     window.location.href = contextPath + '/order-success?orderId=' + data.orderId;
                 } else {
                     alert('Lỗi: ' + (data.error || 'Không thể tạo đơn hàng'));
@@ -470,6 +532,7 @@
             switch(value) {
                 case 'transfer': return 'Chuyển Khoản Ngân Hàng';
                 case 'card': return 'Thẻ Tín Dụng / Debit';
+                case 'vnpay': return 'VNPAY';
                 default: return 'Thanh Toán Khi Nhận Hàng (COD)';
             }
         }

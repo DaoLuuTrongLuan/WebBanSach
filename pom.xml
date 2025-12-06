@@ -50,6 +50,13 @@
             <version>8.0.33</version>
         </dependency>
 
+        <!-- Gson - JSON Library -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
         <!-- JUnit for Testing -->
         <dependency>
             <groupId>junit</groupId>

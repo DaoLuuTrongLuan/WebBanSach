@@ -263,18 +263,54 @@
         document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
-                alert('Tính năng sẽ được kích hoạt sau khi tích hợp đầy đủ');
+                const card = this.closest('.product-card');
+                const productId = card.getAttribute('data-product-id');
+                const productTitle = card.querySelector('.product-name').textContent;
+                const productPrice = card.querySelector('.product-sale-price').textContent;
+                const productImage = card.querySelector('img').src;
+                const productAuthor = card.querySelector('.product-author').textContent;
+
+                addProductToCart(parseInt(productId), productTitle, productPrice, productImage, productAuthor);
             });
         });
 
         // Product card click to detail
         document.querySelectorAll('.product-card').forEach(card => {
             card.addEventListener('click', function(e) {
-                if (e.target.classList.contains('add-to-cart-btn')) return;
+                if (e.target.closest('.btn')) return;
                 const productId = this.getAttribute('data-product-id');
                 window.location.href = contextPath + '/product?id=' + productId;
             });
         });
+
+        function addProductToCart(productId, title, price, image, author) {
+            // Parse price from formatted string (e.g., "145.000đ" -> 145000)
+            const priceValue = parseInt(price.replace(/\D/g, '')) || 0;
+            
+            const product = {
+                id: productId,
+                title: title || 'Sản phẩm',
+                price: priceValue,
+                image: image || '',
+                author: author || '',
+                stock: 999
+            };
+
+            // Check if cart is initialized
+            if (typeof cart === 'undefined') {
+                console.error('Cart not defined');
+                alert('Lỗi: Giỏ hàng chưa sẵn sàng. Vui lòng tải lại trang.');
+                return;
+            }
+            
+            if (!cart || typeof cart.addProduct !== 'function') {
+                console.error('Cart.addProduct is not a function', cart);
+                alert('Lỗi: Không thể thêm vào giỏ hàng. Vui lòng tải lại trang.');
+                return;
+            }
+            
+            cart.addProduct(product, 1);
+        }
     </script>
 </body>
 </html>

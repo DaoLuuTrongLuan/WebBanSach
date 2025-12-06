@@ -166,6 +166,14 @@ INSERT INTO books (
 -- SELECT * FROM books LIMIT 5;
 
 -- ================================================================================
+-- 8. ALTER TABLE FOR VNPAY INTEGRATION
+-- ================================================================================
+
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS vnp_txn_ref VARCHAR(100);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS vnp_transaction_no VARCHAR(50);
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_status VARCHAR(20) DEFAULT 'pending';
+
+-- ================================================================================
 -- HẾT SQL SCRIPT
 -- ================================================================================
 

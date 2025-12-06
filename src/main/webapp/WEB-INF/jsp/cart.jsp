@@ -143,8 +143,8 @@
         });
 
         function displayCart() {
-            // Get cart from localStorage
-            const cartData = localStorage.getItem('cart');
+            // Get cart from localStorage - use same key as cart.js (bookstore_cart)
+            const cartData = localStorage.getItem('bookstore_cart');
             const cart = cartData ? JSON.parse(cartData) : [];
 
             const emptyCartDiv = document.getElementById('empty-cart');
@@ -214,13 +214,13 @@
         }
 
         function updateQuantity(productId, quantity) {
-            const cartData = localStorage.getItem('cart');
+            const cartData = localStorage.getItem('bookstore_cart');
             let cart = cartData ? JSON.parse(cartData) : [];
 
             const item = cart.find(item => item.id === productId);
             if (item) {
                 item.quantity = Math.max(1, quantity);
-                localStorage.setItem('cart', JSON.stringify(cart));
+                localStorage.setItem('bookstore_cart', JSON.stringify(cart));
                 displayCart();
                 updateCartBadge();
             }
@@ -228,11 +228,11 @@
 
         function removeFromCart(productId) {
             if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-                const cartData = localStorage.getItem('cart');
+                const cartData = localStorage.getItem('bookstore_cart');
                 let cart = cartData ? JSON.parse(cartData) : [];
                 
                 cart = cart.filter(item => item.id !== productId);
-                localStorage.setItem('cart', JSON.stringify(cart));
+                localStorage.setItem('bookstore_cart', JSON.stringify(cart));
                 displayCart();
                 updateCartBadge();
             }
@@ -256,7 +256,7 @@
 
         function setupEventListeners() {
             document.getElementById('checkout-btn').addEventListener('click', function() {
-                const cartData = localStorage.getItem('cart');
+                const cartData = localStorage.getItem('bookstore_cart');
                 const cart = cartData ? JSON.parse(cartData) : [];
                 
                 if (cart && cart.length > 0) {
@@ -281,7 +281,7 @@
         }
 
         function updateCartBadge() {
-            const cartData = localStorage.getItem('cart');
+            const cartData = localStorage.getItem('bookstore_cart');
             const cart = cartData ? JSON.parse(cartData) : [];
             let totalItems = 0;
             cart.forEach(item => {

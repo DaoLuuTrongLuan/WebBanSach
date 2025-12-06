@@ -28,6 +28,11 @@ public class Order implements Serializable {
     private LocalDateTime updatedAt;
     private List<OrderItem> items;
     
+    // VNPAY Fields
+    private String vnpTxnRef;
+    private String vnpTransactionNo;
+    private String paymentStatus;
+    
     // Constructors
     public Order() {}
     
@@ -166,6 +171,30 @@ public class Order implements Serializable {
     
     public void setItems(List<OrderItem> items) {
         this.items = items;
+    }
+    
+    public String getVnpTxnRef() {
+        return vnpTxnRef;
+    }
+    
+    public void setVnpTxnRef(String vnpTxnRef) {
+        this.vnpTxnRef = vnpTxnRef;
+    }
+    
+    public String getVnpTransactionNo() {
+        return vnpTransactionNo;
+    }
+    
+    public void setVnpTransactionNo(String vnpTransactionNo) {
+        this.vnpTransactionNo = vnpTransactionNo;
+    }
+    
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+    
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
     
     @Override

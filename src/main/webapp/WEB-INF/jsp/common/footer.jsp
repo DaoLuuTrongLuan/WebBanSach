@@ -49,5 +49,12 @@
 <!-- Scripts -->
 <script src="${pageContext.request.contextPath}/js/config.js"></script>
 <script src="${pageContext.request.contextPath}/js/utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/cart.js"></script>
 <script src="${pageContext.request.contextPath}/js/carousel.js"></script>
+<script src="${pageContext.request.contextPath}/js/api.js"></script>
+<script src="${pageContext.request.contextPath}/js/data.js"></script>
+<script src="${pageContext.request.contextPath}/js/filter.js"></script>
+<script src="${pageContext.request.contextPath}/js/search.js"></script>
+<script src="${pageContext.request.contextPath}/js/pagination.js"></script>
+<script src="${pageContext.request.contextPath}/js/main.js"></script>
 
