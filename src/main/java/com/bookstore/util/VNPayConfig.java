@@ -91,79 +91,73 @@ public class VNPayConfig {
     }
     
     /**
-     * Hash all fields - VNPAY standard method
+     * Build payment URL data - EXACTLY as per VNPAY sample code
+     * Returns array: [0]=queryString, [1]=secureHash
      * @param params Parameter map
-     * @return Hash string for checksum calculation
+     * @return String array with query and hash
      */
-    public static String hashAllFields(Map<String, String> params) {
+    public static String[] buildPaymentData(Map<String, String> params) {
         List<String> fieldNames = new ArrayList<>(params.keySet());
         Collections.sort(fieldNames);
-        StringBuilder sb = new StringBuilder();
-        
-        for (String fieldName : fieldNames) {
-            String fieldValue = params.get(fieldName);
-            if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                if (sb.length() > 0) {
-                    sb.append("&");
-                }
-                sb.append(fieldName);
-                sb.append("=");
-                sb.append(fieldValue);
-            }
-        }
-        return hmacSHA512(vnp_HashSecret, sb.toString());
-    }
-    
-    /**
-     * Build query string from parameters (sorted alphabetically)
-     * @param params Parameter map
-     * @return Encoded query string
-     */
-    public static String buildQueryString(Map<String, String> params) {
-        List<String> fieldNames = new ArrayList<>(params.keySet());
-        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
         StringBuilder query = new StringBuilder();
         
-        for (String fieldName : fieldNames) {
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
             String fieldValue = params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
                 try {
-                    if (query.length() > 0) {
-                        query.append("&");
-                    }
+                    // Build hash data
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    // Build query
                     query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
-                    query.append("=");
+                    query.append('=');
                     query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    if (itr.hasNext()) {
+                        query.append('&');
+                        hashData.append('&');
+                    }
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
             }
         }
-        return query.toString();
+        
+        String vnp_SecureHash = hmacSHA512(vnp_HashSecret, hashData.toString());
+        return new String[]{query.toString(), vnp_SecureHash};
     }
     
     /**
-     * Build hash data for checksum (sorted alphabetically)
+     * Hash all fields for verification - VNPAY standard method
      * @param params Parameter map
-     * @return Hash data string
+     * @return Hash string
      */
-    public static String buildHashData(Map<String, String> params) {
+    public static String hashAllFields(Map<String, String> params) {
         List<String> fieldNames = new ArrayList<>(params.keySet());
         Collections.sort(fieldNames);
         StringBuilder hashData = new StringBuilder();
         
-        for (String fieldName : fieldNames) {
+        Iterator<String> itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = itr.next();
             String fieldValue = params.get(fieldName);
             if ((fieldValue != null) && (fieldValue.length() > 0)) {
-                if (hashData.length() > 0) {
-                    hashData.append("&");
+                try {
+                    hashData.append(fieldName);
+                    hashData.append('=');
+                    hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                    if (itr.hasNext()) {
+                        hashData.append('&');
+                    }
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-                hashData.append(fieldName);
-                hashData.append("=");
-                hashData.append(fieldValue);
             }
         }
-        return hashData.toString();
+        return hmacSHA512(vnp_HashSecret, hashData.toString());
     }
     
     /**

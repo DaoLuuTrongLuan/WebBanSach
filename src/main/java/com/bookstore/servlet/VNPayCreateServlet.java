@@ -94,9 +94,10 @@ public class VNPayCreateServlet extends HttpServlet {
             // Note: Optional billing fields removed for simplicity
             // VNPAY basic payment only requires mandatory fields
             
-            // Build query string and secure hash using VNPAY standard method
-            String queryUrl = VNPayConfig.buildQueryString(vnp_Params);
-            String vnp_SecureHash = VNPayConfig.hashAllFields(vnp_Params);
+            // Build query string and secure hash - EXACTLY as per VNPAY sample
+            String[] paymentData = VNPayConfig.buildPaymentData(vnp_Params);
+            String queryUrl = paymentData[0];
+            String vnp_SecureHash = paymentData[1];
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             
             String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
