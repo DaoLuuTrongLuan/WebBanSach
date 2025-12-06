@@ -5,7 +5,8 @@
 
 const CONFIG = {
     // API Configuration
-    API_BASE_URL: 'http://localhost:8080/api',
+    // Default: use webbansach_war context path
+    API_BASE_URL: 'http://localhost:8080/webbansach_war/api',
     API_TIMEOUT: 30000,
 
     // Storage Keys

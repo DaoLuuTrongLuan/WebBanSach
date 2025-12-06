@@ -357,17 +357,7 @@ function displayFilteredProducts(products) {
         });
     });
 
-    // Add to cart handlers
-    queryAllElements('.add-to-cart-btn').forEach(btn => {
-        onEvent(btn, 'click', function(e) {
-            e.stopPropagation();
-            const productId = parseInt(btn.dataset.productId);
-            const product = getProductById(productId);
-            if (product) {
-                cart.addProduct(product, 1);
-            }
-        });
-    });
+    // Note: Add to cart is handled by global event delegation in main.js
 }
 
 /**

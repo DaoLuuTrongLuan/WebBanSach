@@ -26,6 +26,29 @@ function getContextPath() {
 
 document.addEventListener('DOMContentLoaded', function() {
     Logger.log('Application initialized');
+    
+    // Global event delegation for add-to-cart buttons
+    // This prevents duplicate event handlers from multiple scripts
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.add-to-cart-btn');
+        if (!btn) return;
+        
+        // Prevent handling if already handled
+        if (e.defaultPrevented) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        const card = btn.closest('.product-card');
+        if (!card) return;
+        
+        const productId = parseInt(card.dataset.productId || card.getAttribute('data-product-id'));
+        if (!productId) return;
+        
+        const product = getProductById(productId);
+        if (product && typeof cart !== 'undefined' && cart.addProduct) {
+            cart.addProduct(product, 1);
+        }
+    }, true); // Use capture phase to run first
 
     // Detect current page
     const path = window.location.pathname;
@@ -154,17 +177,10 @@ function attachProductGridHandlers(container) {
         });
     });
 
-    queryAllElements('.add-to-cart-btn', container).forEach(btn => {
-        onEvent(btn, 'click', function(e) {
-            e.stopPropagation();
-            const productId = parseInt(btn.closest('.product-card').dataset.productId);
-            const product = getProductById(productId);
-            if (product) {
-                cart.addProduct(product, 1);
-            }
-        });
-    });
+    // Note: Add to cart is now handled by global event delegation (above)
+    // Individual event listeners removed to prevent duplicate handling
 }
+
 
 // ==========================================
 // PRODUCT DETAIL PAGE INITIALIZATION

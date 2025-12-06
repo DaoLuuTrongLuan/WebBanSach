@@ -91,20 +91,12 @@ public class VNPayCreateServlet extends HttpServlet {
             vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
             vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
             
-            // Add customer info (optional)
-            vnp_Params.put("vnp_Bill_FirstName", fullname.split(" ")[0]);
-            vnp_Params.put("vnp_Bill_LastName", fullname.length() > fullname.split(" ")[0].length() ? 
-                    fullname.substring(fullname.split(" ")[0].length() + 1) : "");
-            vnp_Params.put("vnp_Bill_Email", email);
-            vnp_Params.put("vnp_Bill_Mobile", phone);
-            vnp_Params.put("vnp_Bill_City", city);
-            vnp_Params.put("vnp_Bill_Address", address);
+            // Note: Optional billing fields removed for simplicity
+            // VNPAY basic payment only requires mandatory fields
             
-            // Build hash data and query string
-            String hashData = VNPayConfig.buildHashData(vnp_Params);
-            String vnp_SecureHash = VNPayConfig.hmacSHA512(hashData, VNPayConfig.vnp_HashSecret);
-            
+            // Build query string and secure hash using VNPAY standard method
             String queryUrl = VNPayConfig.buildQueryString(vnp_Params);
+            String vnp_SecureHash = VNPayConfig.hashAllFields(vnp_Params);
             queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
             
             String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;

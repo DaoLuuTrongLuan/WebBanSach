@@ -129,37 +129,37 @@
                         <h2 style="margin-top: 0; font-size: 20px; font-weight: bold; margin-bottom: 20px;">Phương Thức Thanh Toán</h2>
                         <form id="payment-form" class="form">
                             <div class="radio-group" style="margin-bottom: 16px;">
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; margin-bottom: 12px;">
-                                    <input type="radio" name="payment" value="cod" checked style="margin-right: 12px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed; margin-bottom: 12px; opacity: 0.6; background-color: #f5f5f5;">
+                                    <input type="radio" name="payment" value="cod" disabled style="margin-right: 12px;">
                                     <span class="radio-label">
-                                        <strong>Thanh Toán Khi Nhận Hàng</strong> (COD)
+                                        <strong>Thanh Toán Khi Nhận Hàng</strong> (COD) <span style="color: #999; margin-left: 8px; font-size: 12px;">(Đang phát triển)</span>
                                     </span>
                                 </label>
                             </div>
 
                             <div class="radio-group" style="margin-bottom: 16px;">
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; margin-bottom: 12px;">
-                                    <input type="radio" name="payment" value="transfer" style="margin-right: 12px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed; margin-bottom: 12px; opacity: 0.6; background-color: #f5f5f5;">
+                                    <input type="radio" name="payment" value="transfer" disabled style="margin-right: 12px;">
                                     <span class="radio-label">
-                                        <strong>Chuyển Khoản Ngân Hàng</strong>
+                                        <strong>Chuyển Khoản Ngân Hàng</strong> <span style="color: #999; margin-left: 8px; font-size: 12px;">(Đang phát triển)</span>
                                     </span>
                                 </label>
                             </div>
 
                             <div class="radio-group" style="margin-bottom: 16px;">
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; margin-bottom: 12px;">
-                                    <input type="radio" name="payment" value="card" style="margin-right: 12px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: not-allowed; margin-bottom: 12px; opacity: 0.6; background-color: #f5f5f5;">
+                                    <input type="radio" name="payment" value="card" disabled style="margin-right: 12px;">
                                     <span class="radio-label">
-                                        <strong>Thẻ Tín Dụng / Debit</strong>
+                                        <strong>Thẻ Tín Dụng / Debit</strong> <span style="color: #999; margin-left: 8px; font-size: 12px;">(Đang phát triển)</span>
                                     </span>
                                 </label>
                             </div>
 
                             <div class="radio-group" style="margin-bottom: 16px;">
-                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; margin-bottom: 12px;">
-                                    <input type="radio" name="payment" value="vnpay" style="margin-right: 12px;">
+                                <label class="radio-option" style="display: flex; align-items: center; padding: 12px; border: 1px solid #4CAF50; border-radius: 4px; cursor: pointer; margin-bottom: 12px; background-color: #f0f8f0;">
+                                    <input type="radio" name="payment" value="vnpay" checked style="margin-right: 12px;">
                                     <span class="radio-label">
-                                        <strong>VNPAY</strong> - Thanh toán qua cổng VNPAY
+                                        <strong style="color: #4CAF50;">✓ VNPAY</strong> - Thanh toán qua cổng VNPAY (Khả dụng)
                                     </span>
                                 </label>
                             </div>
