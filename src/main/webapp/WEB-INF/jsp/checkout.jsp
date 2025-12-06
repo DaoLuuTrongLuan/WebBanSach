@@ -48,22 +48,22 @@
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                                 <div class="form-group" style="margin-bottom: 16px;">
                                     <label for="fullname" style="display: block; margin-bottom: 8px; font-weight: bold;">Họ và Tên *</label>
-                                    <input type="text" id="fullname" name="fullname" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                                    <input type="text" id="fullname" name="fullname" value="${not empty sessionScope.user ? sessionScope.user.fullname : ''}" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                                 </div>
                                 <div class="form-group" style="margin-bottom: 16px;">
                                     <label for="phone" style="display: block; margin-bottom: 8px; font-weight: bold;">Số Điện Thoại *</label>
-                                    <input type="tel" id="phone" name="phone" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                                    <input type="tel" id="phone" name="phone" value="${not empty sessionScope.user ? sessionScope.user.phone : ''}" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                                 </div>
                             </div>
 
                             <div class="form-group" style="margin-bottom: 16px;">
                                 <label for="email" style="display: block; margin-bottom: 8px; font-weight: bold;">Email *</label>
-                                <input type="email" id="email" name="email" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                                <input type="email" id="email" name="email" value="${not empty sessionScope.user ? sessionScope.user.email : ''}" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                             </div>
 
                             <div class="form-group" style="margin-bottom: 16px;">
                                 <label for="address" style="display: block; margin-bottom: 8px; font-weight: bold;">Địa Chỉ *</label>
-                                <input type="text" id="address" name="address" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                                <input type="text" id="address" name="address" value="${not empty sessionScope.user ? sessionScope.user.address : ''}" required class="form-input" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
                             </div>
 
                             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">

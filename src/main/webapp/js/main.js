@@ -38,16 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
         e.preventDefault();
         e.stopImmediatePropagation();
         
-        const card = btn.closest('.product-card');
-        if (!card) return;
-        
-        const productId = parseInt(card.dataset.productId || card.getAttribute('data-product-id'));
-        if (!productId) return;
-        
-        const product = getProductById(productId);
-        if (product && typeof cart !== 'undefined' && cart.addProduct) {
-            cart.addProduct(product, 1);
-        }
+        // Check if user is logged in by making API call
+        checkLoginBeforeAddCart(btn);
     }, true); // Use capture phase to run first
 
     // Detect current page
@@ -612,6 +604,57 @@ function initializeFAQ() {
             // Toggle current item
             item.classList.toggle('active');
         });
+    });
+}
+
+// ==========================================
+// AUTHENTICATION & AUTHORIZATION
+// ==========================================
+
+/**
+ * Check if user is logged in before adding to cart
+ * @param {HTMLElement} btn - Add to cart button
+ */
+function checkLoginBeforeAddCart(btn) {
+    // Check if user is logged in by looking for user info in page
+    // If not logged in, redirect to login page
+    const contextPath = getContextPath() || '/webbansach_war';
+    const currentUrl = window.location.pathname + window.location.search;
+    
+    // Make a simple check - if we can access session user via servlet
+    // For now, we'll assume if add-to-cart is clicked without session, 
+    // the filter will catch it on checkout. But for UX, we check with a beacon.
+    
+    fetch(contextPath + '/api/check-login', {
+        method: 'GET',
+        credentials: 'include'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.loggedIn) {
+            // User is logged in - proceed with add to cart
+            const card = btn.closest('.product-card');
+            const productId = parseInt(card.dataset.productId || card.getAttribute('data-product-id'));
+            const product = getProductById(productId);
+            if (product && typeof cart !== 'undefined' && cart.addProduct) {
+                cart.addProduct(product, 1);
+            }
+        } else {
+            // User is not logged in - redirect to login
+            const returnUrl = encodeURIComponent(currentUrl);
+            window.location.href = contextPath + '/login?returnUrl=' + returnUrl;
+        }
+    })
+    .catch(error => {
+        Logger.error('Error checking login status', error);
+        // On error, allow adding to cart (graceful degradation)
+        // Filter will protect checkout/cart anyway
+        const card = btn.closest('.product-card');
+        const productId = parseInt(card.dataset.productId || card.getAttribute('data-product-id'));
+        const product = getProductById(productId);
+        if (product && typeof cart !== 'undefined' && cart.addProduct) {
+            cart.addProduct(product, 1);
+        }
     });
 }
 

@@ -2,6 +2,7 @@ package com.bookstore.dao;
 
 import com.bookstore.model.User;
 import com.bookstore.util.DBConnection;
+import com.bookstore.util.PasswordUtil;
 import java.sql.*;
 
 /**
@@ -91,10 +92,11 @@ public class UserDAO {
     
     /**
      * Verify login (email and password)
+     * Hashes password before comparison
      */
     public static User verifyLogin(String email, String password) throws SQLException {
         User user = findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && PasswordUtil.verify(password, user.getPassword())) {
             return user;
         }
         return null;
