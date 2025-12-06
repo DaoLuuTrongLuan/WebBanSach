@@ -141,10 +141,11 @@ document.addEventListener('DOMContentLoaded', function() {
 function performHeaderSearch() {
     const searchInput = getElement('header-search');
     const query = searchInput?.value.trim();
+    const contextPath = getContextPath();
 
     if (query && query.length >= 2) {
         // Redirect to products page with search query
-        window.location.href = `products.html?search=${encodeURIComponent(query)}`;
+        window.location.href = `${contextPath}/products?search=${encodeURIComponent(query)}`;
     }
 }
 
@@ -199,6 +200,7 @@ async function applySort(sortBy) {
  */
 function renderProducts(products) {
     const productsGrid = getElement('products-grid');
+    const contextPath = getContextPath();
     if (!productsGrid) return;
 
     if (products.length === 0) {
@@ -214,7 +216,7 @@ function renderProducts(products) {
         onEvent(card, 'click', function(e) {
             if (e.target.closest('.btn')) return;
             const productId = card.dataset.productId;
-            window.location.href = `product-detail.html?id=${productId}`;
+            window.location.href = `${contextPath}/product?id=${productId}`;
         });
     });
 

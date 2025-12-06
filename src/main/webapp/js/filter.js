@@ -308,6 +308,7 @@ async function applyFilters() {
  */
 function displayFilteredProducts(products) {
     const productsGrid = getElement('products-grid');
+    const contextPath = getContextPath();
     if (!productsGrid) return;
 
     if (products.length === 0) {
@@ -352,7 +353,7 @@ function displayFilteredProducts(products) {
         onEvent(card, 'click', function(e) {
             if (e.target.closest('.btn')) return;
             const productId = card.dataset.productId;
-            window.location.href = `product-detail.html?id=${productId}`;
+            window.location.href = `${contextPath}/product?id=${productId}`;
         });
     });
 

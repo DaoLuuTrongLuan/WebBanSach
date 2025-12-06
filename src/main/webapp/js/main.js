@@ -4,6 +4,23 @@
  */
 
 // ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Get context path for servlet URLs
+ */
+function getContextPath() {
+    const path = window.location.pathname;
+    if (path.includes('/webbansach/')) {
+        return '/webbansach';
+    }
+    // For other deployment contexts
+    const parts = path.split('/');
+    return parts.length > 1 ? '/' + parts[1] : '';
+}
+
+// ==========================================
 // PAGE INITIALIZATION
 // ==========================================
 
@@ -17,13 +34,13 @@ document.addEventListener('DOMContentLoaded', function() {
     cart.updateCartUI();
 
     // Page-specific initialization
-    if (path.includes('index.html') || path.endsWith('/')) {
+    if (path.includes('index.html') || path.endsWith('/') || path === '/webbansach' || path === '/webbansach/') {
         initializeHomePage();
-    } else if (path.includes('products.html')) {
+    } else if (path.includes('products') || path.includes('products.html')) {
         initializeProductsPage();
-    } else if (path.includes('product-detail.html')) {
+    } else if (path.includes('product?') || path.includes('product-detail.html')) {
         initializeProductDetailPage();
-    } else if (path.includes('checkout.html')) {
+    } else if (path.includes('checkout') || path.includes('checkout.html')) {
         initializeCheckoutPage();
     }
 
@@ -44,9 +61,10 @@ function initializeHomePage() {
     // Categories carousel section
     const categoriesGrid = getElement('categories-grid');
     if (categoriesGrid) {
+        const contextPath = getContextPath();
         const html = CATEGORIES_DATA.map(cat => `
             <div class="carousel-item category-item">
-                <a href="products.html?category=${cat.id}" class="category-card card">
+                <a href="${contextPath}/products?category=${cat.id}" class="category-card card">
                     <div class="category-icon">${cat.icon}</div>
                     <h3 class="category-name">${cat.name}</h3>
                     <p class="category-count">${cat.count} sách</p>
@@ -127,11 +145,12 @@ function renderProductsGrid(products, containerId) {
  * Attach product grid event handlers
  */
 function attachProductGridHandlers(container) {
+    const contextPath = getContextPath();
     queryAllElements('.product-card', container).forEach(card => {
         onEvent(card, 'click', function(e) {
             if (e.target.closest('.btn')) return;
             const productId = card.dataset.productId;
-            window.location.href = `product-detail.html?id=${productId}`;
+            window.location.href = `${contextPath}/product?id=${productId}`;
         });
     });
 
@@ -157,10 +176,11 @@ function initializeProductDetailPage() {
     // Get product ID from URL
     const params = new URLSearchParams(window.location.search);
     const productId = parseInt(params.get('id'));
+    const contextPath = getContextPath();
 
     if (!productId) {
         showNotification('Sản phẩm không tồn tại', 'error');
-        setTimeout(() => window.location.href = 'products.html', 2000);
+        setTimeout(() => window.location.href = contextPath + '/products', 2000);
         return;
     }
 
@@ -168,7 +188,7 @@ function initializeProductDetailPage() {
     const product = getProductById(productId);
     if (!product) {
         showNotification('Sản phẩm không tồn tại', 'error');
-        setTimeout(() => window.location.href = 'products.html', 2000);
+        setTimeout(() => window.location.href = contextPath + '/products', 2000);
         return;
     }
 
@@ -250,11 +270,12 @@ function displayProductDetails(product) {
 
 function initializeCheckoutPage() {
     Logger.log('Initializing checkout page');
+    const contextPath = getContextPath();
 
     // Check if cart is empty
     if (cart.isEmpty()) {
         showNotification('Giỏ hàng trống, vui lòng thêm sản phẩm', 'warning');
-        setTimeout(() => window.location.href = 'cart.html', 2000);
+        setTimeout(() => window.location.href = contextPath + '/cart', 2000);
         return;
     }
 
@@ -455,6 +476,7 @@ function validatePaymentForm() {
  * Place order
  */
 async function placeOrder() {
+    const contextPath = getContextPath();
     const orderData = {
         customer: {
             fullname: getElement('fullname')?.value,
@@ -480,7 +502,7 @@ async function placeOrder() {
             showNotification('Đơn hàng đã được tạo thành công', 'success');
             cart.clear();
             setTimeout(() => {
-                window.location.href = `order-success.html?id=${result.orderId}`;
+                window.location.href = `${contextPath}/order-success?orderId=${result.orderId}`;
             }, 2000);
         } else {
             showNotification('Lỗi khi tạo đơn hàng', 'error');
