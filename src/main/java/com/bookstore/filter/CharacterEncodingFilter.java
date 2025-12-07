@@ -2,13 +2,13 @@ package com.bookstore.filter;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
  * Character Encoding Filter
  * Ensures all requests and responses use UTF-8 encoding
  */
-@WebFilter("/*")
 public class CharacterEncodingFilter implements Filter {
     
     private String encoding = "UTF-8";
@@ -24,12 +24,26 @@ public class CharacterEncodingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-        // Set request encoding
+        
+        // Get request URI to check if it's a static resource
+        String uri = ((HttpServletRequest) request).getRequestURI();
+        
+        // Skip encoding filter for static resources (CSS, JS, images)
+        if (uri.endsWith(".css") || uri.endsWith(".js") || 
+            uri.endsWith(".jpg") || uri.endsWith(".jpeg") || 
+            uri.endsWith(".png") || uri.endsWith(".gif") || 
+            uri.endsWith(".svg") || uri.endsWith(".ico") ||
+            uri.endsWith(".woff") || uri.endsWith(".woff2") || 
+            uri.endsWith(".ttf") || uri.endsWith(".eot")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
+        // Set request encoding for dynamic content
         request.setCharacterEncoding(encoding);
         
-        // Set response encoding
+        // Set response encoding (don't set contentType - let servlet/JSP do that)
         response.setCharacterEncoding(encoding);
-        response.setContentType("text/html; charset=" + encoding);
         
         // Continue filter chain
         chain.doFilter(request, response);
