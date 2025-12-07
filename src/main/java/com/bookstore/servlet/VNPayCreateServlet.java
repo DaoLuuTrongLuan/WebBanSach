@@ -1,12 +1,19 @@
 package com.bookstore.servlet;
 
+import com.bookstore.dao.OrderDAO;
+import com.bookstore.model.Order;
+import com.bookstore.model.OrderItem;
+import com.bookstore.model.User;
 import com.bookstore.util.VNPayConfig;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import javax.servlet.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.lang.reflect.Type;
 
 /**
  * Servlet for Creating VNPAY Payment URL
@@ -102,11 +109,62 @@ public class VNPayCreateServlet extends HttpServlet {
             
             String paymentUrl = VNPayConfig.vnp_PayUrl + "?" + queryUrl;
             
-            // Store transaction reference in session for later verification
+            // Get session and user info
             HttpSession session = request.getSession();
+            User user = (User) session.getAttribute("user");
+            
+            if (user == null) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("{\"error\": \"User not logged in\"}");
+                return;
+            }
+            
+            // Get cart items from request
+            String cartItemsJson = request.getParameter("cartItems");
+            List<Map<String, Object>> cartItems = new ArrayList<>();
+            if (cartItemsJson != null && !cartItemsJson.isEmpty()) {
+                Gson gson = new Gson();
+                Type listType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+                cartItems = gson.fromJson(cartItemsJson, listType);
+            }
+            
+            // Create order in database with status "pending"
+            Order order = new Order();
+            order.setUserId(user.getId());
+            order.setFullname(fullname);
+            order.setPhone(phone);
+            order.setEmail(email);
+            order.setAddress(address + (city != null ? ", " + city : "") + (district != null ? ", " + district : ""));
+            order.setShippingMethod(shippingMethod != null ? shippingMethod : "standard");
+            order.setPaymentMethod("vnpay");
+            order.setTotal(orderAmount);
+            order.setStatus("pending");
+            order.setPaymentStatus("pending");
+            order.setVnpTxnRef(vnp_TxnRef);
+            
+            // Create order items list
+            List<OrderItem> orderItems = new ArrayList<>();
+            for (Map<String, Object> item : cartItems) {
+                OrderItem orderItem = new OrderItem();
+                orderItem.setBookId(((Number) item.get("id")).intValue());
+                orderItem.setBookTitle((String) item.get("title"));
+                orderItem.setQuantity(((Number) item.get("quantity")).intValue());
+                orderItem.setPrice(((Number) item.get("price")).longValue());
+                orderItems.add(orderItem);
+            }
+            
+            // Save order to database
+            int orderId = OrderDAO.createOrder(order, orderItems);
+            
+            if (orderId <= 0) {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("{\"error\": \"Failed to create order\"}");
+                return;
+            }
+            
+            // Store order ID in session for later
             session.setAttribute("vnp_TxnRef", vnp_TxnRef);
-            session.setAttribute("orderAmount", orderAmount);
-            session.setAttribute("customerInfo", new String[]{fullname, phone, email, address, city, district});
+            session.setAttribute("pendingOrderId", orderId);
             
             // Return success response with payment URL
             response.getWriter().write("{\"success\": true, \"paymentUrl\": \"" + paymentUrl + "\"}");

@@ -94,38 +94,37 @@ public class ProductServlet extends HttpServlet {
             List<Book> books;
             int totalBooks;
             
-            // If search query provided, use search
-            if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            boolean hasSearch = searchQuery != null && !searchQuery.trim().isEmpty();
+            boolean hasFilter = categoryId != null || minPrice != null || maxPrice != null || authorId != null;
+            boolean hasSort = sortParam != null && !sortParam.isEmpty();
+            
+            // Determine data source
+            if (hasSearch) {
+                // Search query provided
                 books = BookDAO.searchBooks(searchQuery.trim());
                 request.setAttribute("isSearch", true);
                 request.setAttribute("searchQuery", searchQuery);
-            } 
-            // If filters provided, use filter
-            else if (categoryId != null || minPrice != null || maxPrice != null || authorId != null) {
+            } else if (hasFilter) {
+                // Filters provided
                 books = BookDAO.filterBooks(categoryId, minPrice, maxPrice, authorId);
                 request.setAttribute("isFilter", true);
-            } 
-            // Otherwise get all books
-            else {
+            } else if (hasSort) {
+                // Only sort - get ALL books first, then sort
+                books = BookDAO.getAllBooks();
+            } else {
+                // No filter, search, or sort - use pagination directly from DB
                 totalBooks = BookDAO.getTotalBooks();
                 books = BookDAO.getPaginatedBooks(currentPage, PAGE_SIZE);
                 request.setAttribute("totalPages", (int) Math.ceil((double) totalBooks / PAGE_SIZE));
             }
             
-            // Apply sorting if specified
-            if (sortParam != null && !sortParam.isEmpty() && (searchQuery != null || categoryId != null || minPrice != null || maxPrice != null || authorId != null)) {
+            // Apply sorting if specified (for search, filter, or sort-only cases)
+            if (hasSort && (hasSearch || hasFilter || (!hasSearch && !hasFilter))) {
                 books = sortBooks(books, sortParam);
             }
             
-            // For filtered/searched results, apply pagination
-            if ((searchQuery != null && !searchQuery.trim().isEmpty()) || 
-                (categoryId != null || minPrice != null || maxPrice != null || authorId != null)) {
-                // Apply sorting first if specified
-                if (sortParam != null && !sortParam.isEmpty()) {
-                    books = sortBooks(books, sortParam);
-                }
-                
-                // Calculate pagination for filtered results
+            // Apply pagination for search, filter, or sort-only results
+            if (hasSearch || hasFilter || hasSort) {
                 totalBooks = books.size();
                 int startIndex = (currentPage - 1) * PAGE_SIZE;
                 int endIndex = Math.min(startIndex + PAGE_SIZE, totalBooks);

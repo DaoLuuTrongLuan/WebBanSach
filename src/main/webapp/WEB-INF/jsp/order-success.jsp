@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -70,10 +71,11 @@
                 </div>
 
                 <!-- Order Summary -->
-                <div style="margin-top: 40px; background-color: #f9f9f9; padding: 30px; border-radius: 8px; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left;">
-                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 16px; text-align: center;">Thông Tin Đơn Hàng</h3>
+                <div style="margin-top: 40px; background-color: #f9f9f9; padding: 30px; border-radius: 8px; max-width: 800px; margin-left: auto; margin-right: auto; text-align: left;">
+                    <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 20px; text-align: center;">Thông Tin Đơn Hàng</h3>
                     
-                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 12px; row-gap: 12px;">
+                    <!-- Order Details -->
+                    <div style="display: grid; grid-template-columns: 150px 1fr; gap: 12px; row-gap: 12px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #ddd;">
                         <strong>Mã Đơn Hàng:</strong>
                         <span><c:if test="${not empty displayOrderId}">#${displayOrderId}</c:if><c:if test="${empty displayOrderId}">Đang xử lý</c:if></span>
 
@@ -101,6 +103,64 @@
                             📞 1800-1234
                         </span>
                     </div>
+
+                    <!-- Order Items -->
+                    <c:if test="${not empty order && not empty order.items}">
+                        <h4 style="font-size: 16px; font-weight: bold; margin-bottom: 12px;">📚 Chi Tiết Sản Phẩm:</h4>
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+                            <thead>
+                                <tr style="background-color: #e8f4f8; border-bottom: 2px solid #2196F3;">
+                                    <th style="padding: 10px; text-align: left; font-weight: bold;">Sản Phẩm</th>
+                                    <th style="padding: 10px; text-align: center; font-weight: bold;">Số Lượng</th>
+                                    <th style="padding: 10px; text-align: right; font-weight: bold;">Giá</th>
+                                    <th style="padding: 10px; text-align: right; font-weight: bold;">Thành Tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach var="item" items="${order.items}">
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td style="padding: 12px; text-align: left;">${item.bookTitle}</td>
+                                        <td style="padding: 12px; text-align: center;">${item.quantity}</td>
+                                        <td style="padding: 12px; text-align: right;">
+                                            <fmt:formatNumber value="${item.unitPrice}" pattern="#,###"/>đ
+                                        </td>
+                                        <td style="padding: 12px; text-align: right; font-weight: bold;">
+                                            <fmt:formatNumber value="${item.unitPrice * item.quantity}" pattern="#,###"/>đ
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </tbody>
+                        </table>
+
+                        <!-- Order Summary Totals -->
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 20px; padding-top: 16px; border-top: 2px solid #ddd;">
+                            <div></div>
+                            <div style="min-width: 250px;">
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 8px;">
+                                    <span>Tổng tiền:</span>
+                                    <span><fmt:formatNumber value="${order.totalAmount}" pattern="#,###"/>đ</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; margin-bottom: 8px;">
+                                    <span>Vận chuyển:</span>
+                                    <span><fmt:formatNumber value="${not empty order.shippingCost ? order.shippingCost : 0}" pattern="#,###"/>đ</span>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 16px; font-weight: bold; color: #4CAF50;">
+                                    <span>Thành Tiền:</span>
+                                    <span><fmt:formatNumber value="${order.totalAmount + (not empty order.shippingCost ? order.shippingCost : 0)}" pattern="#,###"/>đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Shipping Address -->
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #ddd;">
+                            <h4 style="font-size: 14px; font-weight: bold; margin-bottom: 8px;">📍 Địa Chỉ Giao Hàng:</h4>
+                            <p style="margin: 0; color: #666;">
+                                <strong>${order.fullname}</strong><br>
+                                ${order.address}<br>
+                                📞 ${order.phone}
+                            </p>
+                        </div>
+                    </c:if>
                 </div>
 
                 <!-- FAQ Section -->

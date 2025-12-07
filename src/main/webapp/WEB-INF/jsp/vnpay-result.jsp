@@ -118,8 +118,8 @@
     <main class="main">
         <div class="container">
             <c:choose>
-                <c:when test="${payment_success}">
-                    <!-- Success Result -->
+                <c:when test="${payment_success && !order_not_found}">
+                    <!-- Success Result - This should redirect, but show fallback -->
                     <div class="payment-result">
                         <div class="result-icon result-success">✓</div>
                         <div class="result-title result-success">Thanh Toán Thành Công!</div>
@@ -146,12 +146,6 @@
                                     </c:if>
                                 </span>
                             </div>
-                            <c:if test="${not empty fullname}">
-                                <div class="info-row">
-                                    <span class="info-label">Khách Hàng:</span>
-                                    <span class="info-value">${fullname}</span>
-                                </div>
-                            </c:if>
                             <c:if test="${not empty vnp_OrderInfo}">
                                 <div class="info-row">
                                     <span class="info-label">Thông Tin:</span>
@@ -162,8 +156,48 @@
 
                         <p style="color: #666; margin: 20px 0; line-height: 1.6;">
                             Cảm ơn bạn đã mua sắm tại BookStore! <br>
-                            Đơn hàng của bạn đã được xác nhận và sẽ được xử lý sớm. <br>
-                            Bạn sẽ nhận được thông báo qua email và SMS.
+                            Đơn hàng của bạn đã được xác nhận và sẽ được xử lý sớm.
+                        </p>
+
+                        <div class="button-group">
+                            <a href="${pageContext.request.contextPath}/orders" class="btn-primary">📦 Xem Đơn Hàng</a>
+                            <a href="${pageContext.request.contextPath}/products" class="btn-outline">Tiếp Tục Mua Sắm</a>
+                        </div>
+                    </div>
+                </c:when>
+                <c:when test="${payment_success && order_not_found}">
+                    <!-- Payment success but order not found in DB -->
+                    <div class="payment-result">
+                        <div class="result-icon" style="color: #ff9800;">⚠</div>
+                        <div class="result-title" style="color: #ff9800;">Thanh Toán Thành Công - Đang Xử Lý</div>
+                        
+                        <div class="warning-box">
+                            <strong>Lưu ý:</strong> Thanh toán của bạn đã thành công nhưng đơn hàng chưa được ghi nhận trong hệ thống.
+                            Vui lòng liên hệ với chúng tôi để được hỗ trợ.
+                        </div>
+                        
+                        <div class="result-info">
+                            <div class="info-row">
+                                <span class="info-label">Mã Giao Dịch:</span>
+                                <span class="info-value">${vnp_TxnRef}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Số Tiền:</span>
+                                <span class="info-value amount"><fmt:formatNumber value="${vnp_Amount}" pattern="#,###"/>đ</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Thời Gian:</span>
+                                <span class="info-value">
+                                    <c:if test="${not empty vnp_PayDate}">
+                                        ${vnp_PayDate.substring(0,4)}-${vnp_PayDate.substring(4,6)}-${vnp_PayDate.substring(6,8)}
+                                        ${vnp_PayDate.substring(8,10)}:${vnp_PayDate.substring(10,12)}:${vnp_PayDate.substring(12,14)}
+                                    </c:if>
+                                </span>
+                            </div>
+                        </div>
+
+                        <p style="color: #666; margin: 20px 0; line-height: 1.6;">
+                            <strong>Hotline: 1800-1234 | Email: support@bookstore.com</strong>
                         </p>
 
                         <div class="button-group">

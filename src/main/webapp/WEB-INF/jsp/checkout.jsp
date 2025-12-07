@@ -496,6 +496,7 @@
                 vnpayData.append('district', checkoutData.district);
                 vnpayData.append('shipping', checkoutData.shipping);
                 vnpayData.append('total', checkoutData.total);
+                vnpayData.append('cartItems', JSON.stringify(checkoutData.cartItems));
 
                 fetch(contextPath + '/vnpay/create', {
                     method: 'POST',

@@ -23,6 +23,7 @@ public class Order implements Serializable {
     private String shippingMethod;
     private String paymentMethod;
     private long total;
+    private long shippingCost;
     private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -139,6 +140,18 @@ public class Order implements Serializable {
     
     public void setTotal(long total) {
         this.total = total;
+    }
+    
+    public long getShippingCost() {
+        return shippingCost;
+    }
+    
+    public void setShippingCost(long shippingCost) {
+        this.shippingCost = shippingCost;
+    }
+    
+    public long getTotalAmount() {
+        return total;
     }
     
     public String getStatus() {

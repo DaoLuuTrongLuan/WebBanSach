@@ -14,12 +14,23 @@ import java.util.List;
 public class OrderDAO {
     
     /**
+     * Create a new order with items
+     */
+    public static int createOrder(Order order, List<OrderItem> items) throws SQLException {
+        int orderId = createOrder(order);
+        if (orderId > 0 && items != null && !items.isEmpty()) {
+            createOrderItems(orderId, items);
+        }
+        return orderId;
+    }
+    
+    /**
      * Create a new order
      */
     public static int createOrder(Order order) throws SQLException {
         String sql = "INSERT INTO orders (user_id, fullname, phone, email, address, shipping_method, payment_method, " +
-                     "total_amount, shipping_cost, final_amount, order_status, payment_status, notes) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                     "total_amount, shipping_cost, final_amount, order_status, payment_status, vnp_txn_ref, notes) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement ps = null;
         
@@ -36,13 +47,14 @@ public class OrderDAO {
             ps.setString(4, order.getEmail());
             ps.setString(5, order.getAddress());
             ps.setString(6, order.getShippingMethod() != null ? order.getShippingMethod() : "standard");
-            ps.setString(7, order.getPaymentMethod() != null ? order.getPaymentMethod() : "test");
+            ps.setString(7, order.getPaymentMethod() != null ? order.getPaymentMethod() : "vnpay");
             ps.setLong(8, order.getTotal());
             ps.setLong(9, shippingCost);
             ps.setLong(10, finalAmount);
             ps.setString(11, order.getStatus() != null ? order.getStatus() : "pending");
             ps.setString(12, order.getPaymentStatus() != null ? order.getPaymentStatus() : "pending");
-            ps.setString(13, order.getNotes());
+            ps.setString(13, order.getVnpTxnRef());
+            ps.setString(14, order.getNotes());
             
             ps.executeUpdate();
             
@@ -244,7 +256,8 @@ public class OrderDAO {
         order.setNotes(rs.getString("notes"));
         order.setShippingMethod(rs.getString("shipping_method"));
         order.setPaymentMethod(rs.getString("payment_method"));
-        order.setTotal(rs.getLong("final_amount"));
+        order.setTotal(rs.getLong("total_amount"));
+        order.setShippingCost(rs.getLong("shipping_cost"));
         order.setStatus(rs.getString("order_status"));
         order.setPaymentStatus(rs.getString("payment_status"));
         
